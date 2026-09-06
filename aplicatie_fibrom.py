@@ -115,7 +115,6 @@ with tab3:
     if not df.empty:
         df['IMC'] = (df['greutate'] / (df['inaltime'] ** 2))
         
-        # Metrici Top
         m1, m2, m3, m4, m5, m6 = st.columns(6)
         m1.metric("Volum Eșantion", len(df))
         m2.metric("Vârstă Medie", f"{df['varsta'].mean():.1f} ani")
@@ -126,44 +125,31 @@ with tab3:
         
         st.divider()
 
-        # Rând 1: Factorii Noi (Vitamina D, Dietă, HTA)
         col1, col2, col3 = st.columns(3)
         with col1:
-            fig_vitd = px.box(df, x="vitamina_d", y="dimensiune", color="vitamina_d", title="Deficitul Vit. D vs. Dimensiune Fibrom")
-            st.plotly_chart(fig_vitd, use_container_width=True)
+            st.plotly_chart(px.box(df, x="vitamina_d", y="dimensiune", color="vitamina_d", title="Deficitul Vit. D vs. Dimensiune"), use_container_width=True)
         with col2:
-            fig_hta = px.box(df, x="hta", y="dimensiune", color="hta", title="Impactul Hipertensiunii (HTA) asupra mărimii")
-            st.plotly_chart(fig_hta, use_container_width=True)
+            st.plotly_chart(px.box(df, x="hta", y="dimensiune", color="hta", title="Impactul Hipertensiunii (HTA) asupra mărimii"), use_container_width=True)
         with col3:
-            fig_dieta = px.histogram(df, x="dieta", color="simptom", barmode="stack", title="Tiparul Alimentar vs. Simptomatologie")
-            st.plotly_chart(fig_dieta, use_container_width=True)
+            st.plotly_chart(px.histogram(df, x="dieta", color="simptom", barmode="stack", title="Tiparul Alimentar vs. Simptomatologie"), use_container_width=True)
 
         st.divider()
 
-        # Rând 2: Profil Hormonal extins (Menarhă + Menopauză)
         col4, col5 = st.columns(2)
         with col4:
-            fig_menarha = px.scatter(df, x="varsta_menarha", y="dimensiune", color="istoric_familiar", size="dimensiune",
-                                     title="Expunere Estrogenică: Menarha Precoce vs Dimensiune",
-                                     labels={"varsta_menarha": "Vârsta la prima menstruație (ani)"})
-            st.plotly_chart(fig_menarha, use_container_width=True)
-            
+            st.plotly_chart(px.scatter(df, x="varsta_menarha", y="dimensiune", color="istoric_familiar", size="dimensiune", title="Expunere Estrogenică: Menarha Precoce vs Dimensiune"), use_container_width=True)
         with col5:
-            fig_alcool = px.box(df, x="alcool", y="dimensiune", color="alcool",
-                               title="Impactul Consumului de Alcool asupra dezvoltării tumorale")
-            st.plotly_chart(fig_alcool, use_container_width=True)
+            st.plotly_chart(px.box(df, x="alcool", y="dimensiune", color="alcool", title="Impactul Consumului de Alcool asupra tumorii"), use_container_width=True)
 
         st.divider()
         
-        # Rând 3: Parametri Medicali Standard (Anemie & Tratament)
         col6, col7 = st.columns(2)
         with col6:
             fig_hb = px.box(df, x="simptom", y="hemoglobina", color="simptom", title="Sindromul Anemic (Linie limită Hb=12)")
             fig_hb.add_hline(y=12, line_dash="dot", line_color="red")
             st.plotly_chart(fig_hb, use_container_width=True)
         with col7:
-            fig_recup = px.box(df, x="tratament", y="zile_spitalizare", color="tratament", title="Timp de Recuperare post-intervenție")
-            st.plotly_chart(fig_recup, use_container_width=True)
+            st.plotly_chart(px.box(df, x="tratament", y="zile_spitalizare", color="tratament", title="Timp de Recuperare post-intervenție"), use_container_width=True)
 
     else:
         st.warning("Te rog introdu pacienți pentru a popula graficele de cercetare.")
@@ -211,8 +197,8 @@ with tab4:
                     nou_istoric = st.selectbox("Ereditate?", ["Nu", "Da"], index=get_idx(row[12], ["Nu", "Da"]))
                     
                 with c4:
-                    nou_simptom = st.selectbox("Simptom", ["Menoragie", "Durere pelvină", "Compresie", "Asimptomatic"], index=get_idx(row[15], ["Menoragie", "Durere pel pelvină", "Compresie", "Asimptomatic"]))
-                    nou_hb = st.number_input("Hemoglobina (g/dL)", min_value=4.0, max_value=16.0, value=float(row[16]), step=0.1)
+                    nou_simptom = st.selectbox("Simptom", ["Menoragie", "Durere pelvină", "Compresie", "Asimptomatic"], index=get_idx(row[16], ["Menoragie", "Durere pelvină", "Compresie", "Asimptomatic"]))
+                    nou_hb = st.number_input("Hemoglobina (g/dL)", min_value=4.0, max_value=16.0, value=float(row[15]), step=0.1)
                     nou_tip = st.selectbox("Tip Fibrom", ["Intramural", "Subseros", "Submucos", "Pediculat", "Mixt"], index=get_idx(row[17], ["Intramural", "Subseros", "Submucos", "Pediculat", "Mixt"]))
                     nou_dim = st.number_input("Dimensiune max (cm)", min_value=0.5, max_value=30.0, value=float(row[18]), step=0.5)
                     nou_trat = st.selectbox("Tratament", ["Medicamentos", "Miomectomie", "Histerectomie totală", "Histerectomie subtotală", "Embolizare", "Expectativă"], index=get_idx(row[19], ["Medicamentos", "Miomectomie", "Histerectomie totală", "Histerectomie subtotală", "Embolizare", "Expectativă"]))
