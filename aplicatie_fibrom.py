@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 # --- 1. CONFIGURARE BAZĂ DE DATE ---
-DB_NAME = "studiu_chist_ovarian.db"
+DB_NAME = "studiu_chist_ovarian1.db"
 
 def init_db():
     conn = sqlite3.connect(DB_NAME)
