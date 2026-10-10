@@ -115,7 +115,7 @@ with tab2:
     else:
         st.info("Baza de date este goală.")
 
-# --- TAB 3: DASHBOARD STATISTIC SUPREM ---
+# --- TAB 3: DASHBOARD STATISTIC ---
 with tab3:
     if not df.empty:
         df['IMC'] = (df['greutate'] / (df['inaltime'] ** 2))
@@ -203,7 +203,7 @@ with tab4:
                     nou_simptom = st.selectbox("Simptom", ["Durere pelvină", "Tulburări menstruale", "Durere acută", "Asimptomatic"], index=get_idx(row[15], ["Durere pelvină", "Tulburări menstruale", "Durere acută", "Asimptomatic"]))
                     nou_tip = st.selectbox("Tip Chist", ["Funcțional", "Endometriozic", "Dermoid", "Seros", "Mucinos", "Malign/Suspect"], index=get_idx(row[16], ["Funcțional", "Endometriozic", "Dermoid", "Seros", "Mucinos", "Malign/Suspect"]))
                     nou_localizare = st.selectbox("Localizare", ["Ovar Drept", "Ovar Stâng", "Bilateral"], index=get_idx(row[17], ["Ovar Drept", "Ovar Stâng", "Bilateral"]))
-nou_aspect = st.selectbox("Aspect Eco", ["Unilocular clar", "Multilocular", "Aspect 'sticla mata'", "Componentă solidă/Papile"], index=get_idx(row[18], ["Unilocular clar", "Multilocular", "Aspect 'sticla mata'", "Componentă solidă/Papile"]))
+                    nou_aspect = st.selectbox("Aspect Eco", ["Unilocular clar", "Multilocular", "Aspect 'sticla mata'", "Componentă solidă/Papile"], index=get_idx(row[18], ["Unilocular clar", "Multilocular", "Aspect 'sticla mata'", "Componentă solidă/Papile"]))
                     
                 with c4:
                     nou_ca125 = st.number_input("CA-125 (U/mL)", min_value=0.0, max_value=5000.0, value=float(row[19]), step=1.0)
