@@ -21,7 +21,8 @@ def init_db():
             hta TEXT, vitamina_d TEXT, 
             simptom TEXT, tip_chist TEXT, localizare TEXT, aspect_eco TEXT,
             ca125 REAL, lichid_douglas TEXT, complicatii TEXT,
-            dimensiune REAL, tratament TEXT, zile_spitalizare INTEGER
+            dimensiune REAL, tratament TEXT, zile_spitalizare INTEGER,
+            detalii_complicatii TEXT, detalii_tratament TEXT
         )
     ''')
     conn.commit()
@@ -77,10 +78,17 @@ with tab1:
             aspect_eco = st.selectbox("Aspect Ecografic", ["Unilocular clar", "Multilocular", "Aspect 'sticla mata'", "Componentă solidă/Papile"])
             ca125 = st.number_input("Marker CA-125 (U/mL)", min_value=0.0, max_value=5000.0, value=15.0, step=1.0)
             lichid_douglas = st.selectbox("Lichid în Douglas?", ["Nu", "Cantitate minimă", "Cantitate medie/mare"])
-            complicatii = st.selectbox("Complicații acute", ["Fără", "Torsiune de anexă", "Ruptură chist", "Hemoragie intrakistica"])
+            complicatii = st.selectbox("Complicații acute (Categorie)", ["Fără", "Torsiune de anexă", "Ruptură chist", "Hemoragie intrakistica"])
             dimensiune = st.number_input("Dimensiune max (cm)", min_value=1.0, max_value=40.0, value=5.0)
-            tratament = st.selectbox("Tratament", ["Expectativă/Monitorizare", "Medicamentos (ACO)", "Chistectomie laparoscopică", "Chistectomie clasică", "Anexectomie"])
+            tratament = st.selectbox("Tratament (Categorie)", ["Expectativă/Monitorizare", "Medicamentos (ACO)", "Chistectomie laparoscopică", "Chistectomie clasică", "Anexectomie"])
             zile = st.number_input("Spitalizare (zile)", min_value=0, max_value=30, value=2)
+
+        st.markdown("📝 **Observații și Detalii Libere**")
+        col_det1, col_det2 = st.columns(2)
+        with col_det1:
+            detalii_complicatii = st.text_area("Scrie detalii despre complicații (opțional)", height=100)
+        with col_det2:
+            detalii_tratament = st.text_area("Scrie detalii despre tratament / evoluție (opțional)", height=100)
 
         btn_salveaza = st.form_submit_button("💾 Salvează Fișa Pacientului")
 
@@ -92,9 +100,9 @@ with tab1:
                     conn = sqlite3.connect(DB_NAME)
                     c = conn.cursor()
                     c.execute('''
-                        INSERT INTO pacienti_chist (cod_pacient, varsta, greutate, inaltime, etnie, mediu, fumator, alcool, dieta, menopauza, varsta_menarha, anticonceptionale, numar_sarcini, istoric_chist, hta, vitamina_d, simptom, tip_chist, localizare, aspect_eco, ca125, lichid_douglas, complicatii, dimensiune, tratament, zile_spitalizare)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ''', (cod, varsta, greutate, inaltime, etnie, mediu, fumator, alcool, dieta, menopauza, varsta_menarha, anti, sarcini, istoric, hta, vit_d, simptom, tip_chist, localizare, aspect_eco, ca125, lichid_douglas, complicatii, dimensiune, tratament, zile))
+                        INSERT INTO pacienti_chist (cod_pacient, varsta, greutate, inaltime, etnie, mediu, fumator, alcool, dieta, menopauza, varsta_menarha, anticonceptionale, numar_sarcini, istoric_chist, hta, vitamina_d, simptom, tip_chist, localizare, aspect_eco, ca125, lichid_douglas, complicatii, dimensiune, tratament, zile_spitalizare, detalii_complicatii, detalii_tratament)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (cod, varsta, greutate, inaltime, etnie, mediu, fumator, alcool, dieta, menopauza, varsta_menarha, anti, sarcini, istoric, hta, vit_d, simptom, tip_chist, localizare, aspect_eco, ca125, lichid_douglas, complicatii, dimensiune, tratament, zile, detalii_complicatii, detalii_tratament))
                     conn.commit()
                     conn.close()
                     st.success(f"Pacientul {cod} a fost înregistrat cu succes!")
@@ -170,7 +178,7 @@ with tab4:
         
         conn = sqlite3.connect(DB_NAME)
         c = conn.cursor()
-        c.execute('''SELECT varsta, greutate, inaltime, etnie, mediu, fumator, alcool, dieta, menopauza, varsta_menarha, anticonceptionale, numar_sarcini, istoric_chist, hta, vitamina_d, simptom, tip_chist, localizare, aspect_eco, ca125, lichid_douglas, complicatii, dimensiune, tratament, zile_spitalizare 
+        c.execute('''SELECT varsta, greutate, inaltime, etnie, mediu, fumator, alcool, dieta, menopauza, varsta_menarha, anticonceptionale, numar_sarcini, istoric_chist, hta, vitamina_d, simptom, tip_chist, localizare, aspect_eco, ca125, lichid_douglas, complicatii, dimensiune, tratament, zile_spitalizare, detalii_complicatii, detalii_tratament 
                      FROM pacienti_chist WHERE cod_pacient=?''', (cod_ales,))
         row = c.fetchone()
         conn.close()
@@ -208,10 +216,19 @@ with tab4:
                 with c4:
                     nou_ca125 = st.number_input("CA-125 (U/mL)", min_value=0.0, max_value=5000.0, value=float(row[19]), step=1.0)
                     nou_lichid = st.selectbox("Lichid Douglas?", ["Nu", "Cantitate minimă", "Cantitate medie/mare"], index=get_idx(row[20], ["Nu", "Cantitate minimă", "Cantitate medie/mare"]))
-                    nou_compl = st.selectbox("Complicații", ["Fără", "Torsiune de anexă", "Ruptură chist", "Hemoragie intrakistica"], index=get_idx(row[21], ["Fără", "Torsiune de anexă", "Ruptură chist", "Hemoragie intrakistica"]))
+                    nou_compl = st.selectbox("Complicații (Categorie)", ["Fără", "Torsiune de anexă", "Ruptură chist", "Hemoragie intrakistica"], index=get_idx(row[21], ["Fără", "Torsiune de anexă", "Ruptură chist", "Hemoragie intrakistica"]))
                     nou_dim = st.number_input("Dimensiune max (cm)", min_value=1.0, max_value=40.0, value=float(row[22]), step=0.5)
-                    nou_trat = st.selectbox("Tratament", ["Expectativă/Monitorizare", "Medicamentos (ACO)", "Chistectomie laparoscopică", "Chistectomie clasică", "Anexectomie"], index=get_idx(row[23], ["Expectativă/Monitorizare", "Medicamentos (ACO)", "Chistectomie laparoscopică", "Chistectomie clasică", "Anexectomie"]))
+                    nou_trat = st.selectbox("Tratament (Categorie)", ["Expectativă/Monitorizare", "Medicamentos (ACO)", "Chistectomie laparoscopică", "Chistectomie clasică", "Anexectomie"], index=get_idx(row[23], ["Expectativă/Monitorizare", "Medicamentos (ACO)", "Chistectomie laparoscopică", "Chistectomie clasică", "Anexectomie"]))
                     nou_zile = st.number_input("Spitalizare (zile)", min_value=0, max_value=30, value=row[24])
+
+                st.markdown("📝 **Observații și Detalii Libere (Editare)**")
+                col_upd1, col_upd2 = st.columns(2)
+                with col_upd1:
+                    val_compl = row[25] if row[25] is not None else ""
+                    nou_det_compl = st.text_area("Scrie detalii despre complicații", value=val_compl, height=100)
+                with col_upd2:
+                    val_trat = row[26] if row[26] is not None else ""
+                    nou_det_trat = st.text_area("Scrie detalii despre tratament / evoluție", value=val_trat, height=100)
 
                 btn_update = st.form_submit_button("✅ Actualizează Modificările")
             
@@ -222,9 +239,9 @@ with tab4:
                 c = conn.cursor()
                 c.execute('''
                     UPDATE pacienti_chist 
-                    SET varsta=?, greutate=?, inaltime=?, etnie=?, mediu=?, fumator=?, alcool=?, dieta=?, menopauza=?, varsta_menarha=?, anticonceptionale=?, numar_sarcini=?, istoric_chist=?, hta=?, vitamina_d=?, simptom=?, tip_chist=?, localizare=?, aspect_eco=?, ca125=?, lichid_douglas=?, complicatii=?, dimensiune=?, tratament=?, zile_spitalizare=?
+                    SET varsta=?, greutate=?, inaltime=?, etnie=?, mediu=?, fumator=?, alcool=?, dieta=?, menopauza=?, varsta_menarha=?, anticonceptionale=?, numar_sarcini=?, istoric_chist=?, hta=?, vitamina_d=?, simptom=?, tip_chist=?, localizare=?, aspect_eco=?, ca125=?, lichid_douglas=?, complicatii=?, dimensiune=?, tratament=?, zile_spitalizare=?, detalii_complicatii=?, detalii_tratament=?
                     WHERE cod_pacient=?
-                ''', (nou_varsta, nou_greutate, nou_inaltime, nou_etnie, nou_mediu, nou_fumator, nou_alcool, nou_dieta, nou_menopauza, nou_menarha, nou_anti, nou_sarcini, nou_istoric, nou_hta, nou_vitd, nou_simptom, nou_tip, nou_localizare, nou_aspect, nou_ca125, nou_lichid, nou_compl, nou_dim, nou_trat, nou_zile, cod_ales))
+                ''', (nou_varsta, nou_greutate, nou_inaltime, nou_etnie, nou_mediu, nou_fumator, nou_alcool, nou_dieta, nou_menopauza, nou_menarha, nou_anti, nou_sarcini, nou_istoric, nou_hta, nou_vitd, nou_simptom, nou_tip, nou_localizare, nou_aspect, nou_ca125, nou_lichid, nou_compl, nou_dim, nou_trat, nou_zile, nou_det_compl, nou_det_trat, cod_ales))
                 conn.commit()
                 conn.close()
                 st.success("Datele au fost actualizate cu succes!")
