@@ -74,7 +74,7 @@ with tab1:
             st.markdown("🏥 **Clinic, Eco & Tratament**")
             tip_chist = st.selectbox("Tip Chist", ["Funcțional", "Endometriozic", "Dermoid", "Seros", "Mucinos", "Malign/Suspect"])
             localizare = st.selectbox("Localizare", ["Ovar Drept", "Ovar Stâng", "Bilateral"])
-            aspect_eco = st.selectbox("Aspect Ecografic", ["Unilocular clar", "Multilocular", "Aspect "sticla mata"", "Componentă solidă/Papile"])
+            aspect_eco = st.selectbox("Aspect Ecografic", ["Unilocular clar", "Multilocular", "Aspect 'sticla mata'", "Componentă solidă/Papile"])
             ca125 = st.number_input("Marker CA-125 (U/mL)", min_value=0.0, max_value=5000.0, value=15.0, step=1.0)
             lichid_douglas = st.selectbox("Lichid în Douglas?", ["Nu", "Cantitate minimă", "Cantitate medie/mare"])
             complicatii = st.selectbox("Complicații acute", ["Fără", "Torsiune de anexă", "Ruptură chist", "Hemoragie intrakistica"])
